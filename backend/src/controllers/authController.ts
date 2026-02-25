@@ -24,7 +24,7 @@ export const CreateUser = async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, 
+      secure: true, 
       sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
@@ -60,7 +60,7 @@ export const LoginUser = async (req: Request, res: Response) => {
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: false, 
+      secure: true, 
       sameSite: "none",
       maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });

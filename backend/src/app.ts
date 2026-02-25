@@ -6,12 +6,13 @@ import authRoutes from "./routes/authRoutes";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: ["http://localhost:3000", "http://127.0.0.1:3000", "https://taskmaster-seven-nu.vercel.app"],
-    credentials: true,
-  })
-);
+app.use(cors({
+  origin: "https://taskmaster-seven-nu.vercel.app",
+  credentials: true,
+}));
+
+app.options("*", cors());
+
 app.use(express.json());
 app.use(cookieParser());
 
