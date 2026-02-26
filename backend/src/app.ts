@@ -6,9 +6,27 @@ import authRoutes from "./routes/authRoutes";
 
 const app = express();
 
-const allowedOrigin = process.env.FRONTEND_URL || "http://localhost:3000";
-const corsOptions = {
-  origin: allowedOrigin,
+const envOrigins = (process.env.FRONTEND_URL || "")
+  .split(",")
+  .map((origin) => origin.trim())
+  .filter(Boolean);
+
+const allowedOrigins = new Set([
+  "http://localhost:3000",
+  "https://taskmaster-seven-nu.vercel.app",
+  ...envOrigins,
+]);
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.has(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error("Not allowed by CORS"));
+  },
   credentials: true,
 };
 
