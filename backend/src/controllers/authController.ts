@@ -3,6 +3,15 @@ import User from "../models/userModel";
 import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken";
 
+const isProduction = process.env.NODE_ENV === "production";
+
+const getCookieOptions = () => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: (isProduction ? "none" : "lax") as "none" | "lax",
+  maxAge: 30 * 24 * 60 * 60 * 1000,
+});
+
 export const CreateUser = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body;
@@ -22,12 +31,7 @@ export const CreateUser = async (req: Request, res: Response) => {
 
     const token = generateToken(user._id.toString());
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+    res.cookie("token", token, getCookieOptions());
 
     res.status(201).json({
       user: {
@@ -58,12 +62,7 @@ export const LoginUser = async (req: Request, res: Response) => {
 
     const token = generateToken(user._id.toString());
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: true, 
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
-    });
+    res.cookie("token", token, getCookieOptions());
 
     res.json({
       user: {
@@ -79,7 +78,8 @@ export const LoginUser = async (req: Request, res: Response) => {
 
 export const LogoutUser = async (req: Request, res: Response) => {
   res.cookie("token", "", {
-    httpOnly: true,
+    ...getCookieOptions(),
+    maxAge: 0,
     expires: new Date(0),
   });
   res.status(200).json({ message: "Logged out successfully" });
